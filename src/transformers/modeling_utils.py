@@ -587,7 +587,14 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin):
         output_loading_info = kwargs.pop("output_loading_info", False)
         local_files_only = kwargs.pop("local_files_only", False)
         use_cdn = kwargs.pop("use_cdn", True)
-
+        
+        #####################################
+        #
+        #
+        #         Initializes several variables by popping them out of the kwargs dictionary, using None or a default value if they are not present in the dictionary. These variables are used later in the method.
+        #
+        #####################################
+        
         # Load config if we don't provide a configuration
         if not isinstance(config, PretrainedConfig):
             config_path = config if config is not None else pretrained_model_name_or_path
@@ -604,6 +611,13 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin):
             )
         else:
             model_kwargs = kwargs
+            
+        ###############################
+        #
+        #.  Checks if config is an instance of PretrainedConfig. If not, it assumes that config is a path to the configuration file and loads it using the config_class attribute of the cls class (which is a subclass of PreTrainedModel). The method also passes some additional keyword arguments to the config_class.from_pretrained method, and returns the loaded configuration and any unused keyword arguments as model_kwargs.
+        #. If config is already a PretrainedConfig instance, the kwargs dictionary is simply assigned to model_kwargs.
+        #
+        ################################
 
         # Load model
         if pretrained_model_name_or_path is not None:
@@ -639,6 +653,7 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin):
                     filename=(TF2_WEIGHTS_NAME if from_tf else WEIGHTS_NAME),
                     use_cdn=use_cdn,
                 )
+                
 
             try:
                 # Load from URL or cache if already cached
@@ -666,6 +681,16 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin):
                 logger.info("loading weights file {} from cache at {}".format(archive_file, resolved_archive_file))
         else:
             resolved_archive_file = None
+
+        ###################################
+        #
+        #        Checks if pretrained_model_name_or_path is not None. If it is not, the method determines whether it is a directory, file, or URL, 
+        # and sets the archive_file variable to the appropriate value. If from_tf is True, it looks for a file with the name TF2_WEIGHTS_NAME or 
+        # TF_WEIGHTS_NAME + ".index" in the directory, or uses the hf_bucket_url function to construct a URL to the Hugging Face model hub.
+        #
+        ###################################
+
+            
 
         # Instantiate model.
         model = cls(config, *model_args, **model_kwargs)
